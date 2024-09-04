@@ -14,9 +14,9 @@ import java.util.List;
 @Entity
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
-    private Integer id;
+    private String id;
 
     @Column(nullable = false)
     private String fullName;
@@ -69,11 +69,11 @@ public class User implements UserDetails {
         return true;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public User setId(Integer id) {
+    public User setId(String id) {
         this.id = id;
         return this;
     }

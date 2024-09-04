@@ -5,6 +5,16 @@ public class LoginResponse {
     private String token;
 
     private long expiresIn;
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public LoginResponse setUuid(String uuid) {
+        this.uuid = uuid;
+        return this;
+    }
 
     public String getToken() {
         return token;
@@ -29,6 +39,7 @@ public class LoginResponse {
         return "LoginResponse{" +
                 "token='" + token + '\'' +
                 ", expiresIn=" + expiresIn +
+                ", uuid='" + uuid + '\'' +
                 '}';
     }
 }
