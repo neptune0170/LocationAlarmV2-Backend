@@ -44,6 +44,9 @@ public class EventHeader {
     @Column(name="is_AOT_enable")
     private boolean isAOTEnable;
 
+    @Column(name="location_Name")
+    private String locationName;
+
     private String latitude;
     private String longitude;
 

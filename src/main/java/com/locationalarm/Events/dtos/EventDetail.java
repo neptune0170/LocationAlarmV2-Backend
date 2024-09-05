@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class EventDetail {
     private String eventName;
+    private String locationName;
     private String lat;
     private String lng;
     private String time;

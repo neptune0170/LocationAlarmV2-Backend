@@ -25,7 +25,7 @@ public class EventHeaderServiceImpl implements EventHeaderService {
 
     @Override
     @Transactional
-    public long addEvent(String eventName, String adminMail, Date endTime, String latitude, String longitude, boolean isAOTEnable) {
+    public long addEvent(String eventName, String adminMail, Date endTime, String locationName, String latitude, String longitude, boolean isAOTEnable) {
         User user = userService.findByEmail(adminMail).orElse(null);
         if(user==null || user.isInAnEvent()) return 0;
         else{
@@ -37,6 +37,7 @@ public class EventHeaderServiceImpl implements EventHeaderService {
                     .eventName(eventName)
                     .eventEndTime(endTime)
                     .adminEmail(adminMail)
+                    .locationName(locationName)
                     .latitude(latitude)
                     .longitude(longitude)
                     .isAOTEnable(isAOTEnable)

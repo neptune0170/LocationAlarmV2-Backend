@@ -32,7 +32,7 @@ public class EventController {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         try {
             Date date = sdf.parse(eventDetail.getTime());
-            long eventId = eventHeaderService.addEvent(eventDetail.getEventName(), email, date, eventDetail.getLat(), eventDetail.getLng(), eventDetail.isAOTEnable());
+            long eventId = eventHeaderService.addEvent(eventDetail.getEventName(), email, date, eventDetail.getLocationName() ,  eventDetail.getLat(), eventDetail.getLng(), eventDetail.isAOTEnable());
             return ResponseEntity.ok(ResponseDto.builder().code("200").message(String.valueOf(eventId)).build());
         } catch (Exception e) {
             return ResponseEntity.ok(ResponseDto.builder().code("500").message(String.valueOf("Wrong Date Format")).build());
