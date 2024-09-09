@@ -97,11 +97,12 @@ public class EventHeaderServiceImpl implements EventHeaderService {
         List<Attendee> attendeeList = eventHeader.getAttendeeList();
         List<AttendeeResponse> attendeeResponses = new LinkedList<>();
         attendeeList.stream().forEach(attendee -> {
-            if(!attendee.getUserEmail().equals(eventHeader.getAdminEmail()))attendeeResponses.add(AttendeeResponse.builder()
+           attendeeResponses.add(AttendeeResponse.builder()
                     .email(attendee.getUserEmail()).AOT("").build());
         });
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:sss");
         return EventDetailResponse.builder()
+                .admin(eventHeader.getAdminEmail())
                 .eventName(eventHeader.getEventName())
                 .attendees(attendeeResponses)
                 .time(sdf.format(eventHeader.getEventEndTime()))

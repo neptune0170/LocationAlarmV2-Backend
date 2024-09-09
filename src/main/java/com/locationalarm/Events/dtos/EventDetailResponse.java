@@ -14,5 +14,6 @@ public class EventDetailResponse {
     private String eventName;
     private String time;
     private boolean isAOTEnable;
+    private String admin;
     private List<AttendeeResponse> attendees;
 }

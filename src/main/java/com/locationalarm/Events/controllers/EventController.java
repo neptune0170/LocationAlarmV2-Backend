@@ -34,36 +34,36 @@ public class EventController {
         try {
             Date date = sdf.parse(eventDetail.getTime());
             long eventId = eventHeaderService.addEvent(eventDetail.getEventName(), email, date, eventDetail.getLocationName() ,  eventDetail.getLat(), eventDetail.getLng(), eventDetail.isAOTEnable());
-            return ResponseEntity.ok(ResponseDto.builder().code("200").message(String.valueOf(eventId)).build());
+            return ResponseEntity.ok(ResponseDto.builder().status("200").response(String.valueOf(eventId)).build());
         } catch (Exception e) {
-            return ResponseEntity.ok(ResponseDto.builder().code("500").message(String.valueOf("Wrong Date Format")).build());
+            return ResponseEntity.ok(ResponseDto.builder().status("500").response(String.valueOf("Wrong Date Format")).build());
         }
     }
-    @PutMapping("/{eventId}/attendee")
+    @PutMapping("/addAttendee/{eventId}")
     public ResponseEntity<ResponseDto> addAttendee(@PathVariable long eventId, @RequestBody AtendeeList atendeeList){
-        return ResponseEntity.ok(ResponseDto.builder().code("200").message(eventHeaderService.addAttendee(atendeeList.getEmails(),eventId)).build());
+        return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.addAttendee(atendeeList.getEmails(),eventId)).build());
     }
-    @DeleteMapping("/{eventId}")
+    @DeleteMapping("/deleteEvent/{eventId}")
     public ResponseEntity<ResponseDto> deleteEvent(@PathVariable long eventId){
-        return ResponseEntity.ok(ResponseDto.builder().code("200").message(eventHeaderService.deleteEvent(eventId)).build());
+        return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.deleteEvent(eventId)).build());
     }
-    @PutMapping("/{eventId}/event")
+    @PutMapping("/updateEventDetails/{eventId}")
     public ResponseEntity<ResponseDto> updateEventDetail(@PathVariable long eventId, @RequestBody EventDetail eventDetail){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         try {
             Date date = sdf.parse(eventDetail.getTime());
-            return ResponseEntity.ok(ResponseDto.builder().code("200").message(eventHeaderService.updateEvent(eventId,eventDetail.getLat(),eventDetail.getLng(),eventDetail.getLocationName(),eventDetail.getEventName(),date,eventDetail.isAOTEnable())).build());
+            return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.updateEvent(eventId,eventDetail.getLat(),eventDetail.getLng(),eventDetail.getLocationName(),eventDetail.getEventName(),date,eventDetail.isAOTEnable())).build());
         } catch (Exception e) {
-            return ResponseEntity.ok(ResponseDto.builder().code("500").message(String.valueOf("Wrong Date Format")).build());
+            return ResponseEntity.ok(ResponseDto.builder().status("500").response(String.valueOf("Wrong Date Format")).build());
         }
     }
     @GetMapping("/{eventId}")
     public EventDetailResponse getEventData(@PathVariable long eventId){
         return eventHeaderService.getEvent(eventId);
     }
-    @DeleteMapping("/{eventId}/attendee")
+    @DeleteMapping("/removeAttendee/{eventId}")
     public ResponseEntity<ResponseDto> deleteAttendeeFromEvent(@PathVariable long eventId, @RequestBody AtendeeList atendeeList){
-        return ResponseEntity.ok(ResponseDto.builder().code("200").message(eventHeaderService.removeAttendee(atendeeList.getEmails(),eventId)).build());
+        return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.removeAttendee(atendeeList.getEmails(),eventId)).build());
     }
 }
 

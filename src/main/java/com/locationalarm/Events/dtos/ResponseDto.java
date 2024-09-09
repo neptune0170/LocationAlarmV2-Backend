@@ -5,6 +5,6 @@ import lombok.Data;
 @Builder
 @Data
 public class ResponseDto {
-    private String code;
-    private String message;
+    private String status;
+    private String response;
 }
