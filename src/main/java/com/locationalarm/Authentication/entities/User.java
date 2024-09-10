@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    private boolean inAnEvent;
+    private long eventId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -121,12 +121,12 @@ public class User implements UserDetails {
         return this;
     }
 
-    public boolean isInAnEvent() {
-        return inAnEvent;
+    public long getEventId() {
+        return eventId;
     }
 
-    public void setInAnEvent(boolean inAnEvent) {
-        this.inAnEvent = inAnEvent;
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
     }
 
     @Override

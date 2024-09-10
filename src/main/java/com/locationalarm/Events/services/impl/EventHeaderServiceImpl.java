@@ -34,10 +34,8 @@ public class EventHeaderServiceImpl implements EventHeaderService {
     @Transactional
     public long addEvent(String eventName, String adminMail, Date endTime, String locationName, String latitude, String longitude, boolean isAOTEnable) {
         User user = userService.findByEmail(adminMail).orElse(null);
-        if(user==null || user.isInAnEvent()) return 0;
+        if(user==null || user.getEventId()!=0) return 0;
         else{
-            user.setInAnEvent(true);
-            userService.updateUser(user);
             List<Attendee> attendeeList = Arrays.asList(new Attendee[]{Attendee.builder().userEmail(adminMail).build()});
             EventHeader eventHeader = EventHeader
                     .builder()
@@ -50,6 +48,8 @@ public class EventHeaderServiceImpl implements EventHeaderService {
                     .isAOTEnable(isAOTEnable)
                     .attendeeList(attendeeList).build();
             eventHeader = eventHeaderRepo.save(eventHeader);
+            user.setEventId(eventHeader.getId());
+            userService.updateUser(user);
             return eventHeader.getId();
         }
     }
@@ -73,8 +73,8 @@ public class EventHeaderServiceImpl implements EventHeaderService {
         List<Attendee> attendeeList = eventHeader.getAttendeeList();
         emails.stream().forEach(email->{
             User user = userService.findByEmail(email).orElse(null);
-            if(user != null && !user.isInAnEvent()){
-                user.setInAnEvent(true);
+            if(user != null && user.getEventId()==0l){
+                user.setEventId(eventId);
                 userService.updateUser(user);
                 attendeeList.add(Attendee.builder().userEmail(email).build());
             }
