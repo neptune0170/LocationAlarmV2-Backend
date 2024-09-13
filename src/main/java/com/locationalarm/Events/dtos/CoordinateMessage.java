@@ -1,4 +1,4 @@
-package com.locationalarm.Events.websocket;
+package com.locationalarm.Events.dtos;
 
 public class CoordinateMessage {
     private String userId;
