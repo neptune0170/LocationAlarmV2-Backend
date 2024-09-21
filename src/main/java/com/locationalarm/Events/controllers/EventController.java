@@ -7,6 +7,7 @@ import com.locationalarm.Events.dtos.EventDetailResponse;
 import com.locationalarm.Events.dtos.ResponseDto;
 import com.locationalarm.Events.services.EventHeaderService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,10 +40,35 @@ public class EventController {
             return ResponseEntity.ok(ResponseDto.builder().status("500").response(String.valueOf("Wrong Date Format")).build());
         }
     }
+
     @PutMapping("/addAttendee/{eventId}")
     public ResponseEntity<ResponseDto> addAttendee(@PathVariable long eventId, @RequestBody AtendeeList atendeeList){
-        return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.addAttendee(atendeeList.getEmails(),eventId)).build());
+        String result = eventHeaderService.addAttendee(atendeeList.getEmails(), eventId);
+
+        if (result.equals("success")) {
+            // Return HTTP 200 OK for successful addition
+            return ResponseEntity.ok(
+                    ResponseDto.builder().status("200").response(result).build()
+            );
+        } else if (result.equals("failed")) {
+            // Return HTTP 409 Conflict if a user is already in another event
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    ResponseDto.builder().status("409").response("User already part of another event").build()
+            );
+        } else if (result.equals("user_not_found")) {
+            // Return HTTP 404 Not Found if user does not exist
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ResponseDto.builder().status("404").response("User not found").build()
+            );
+        } else {
+            // Return HTTP 400 Bad Request for any other unexpected cases
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponseDto.builder().status("400").response("Unexpected error").build()
+            );
+        }
     }
+
+
     @DeleteMapping("/deleteEvent/{eventId}")
     public ResponseEntity<ResponseDto> deleteEvent(@PathVariable long eventId){
         return ResponseEntity.ok(ResponseDto.builder().status("200").response(eventHeaderService.deleteEvent(eventId)).build());

@@ -17,7 +17,7 @@ public class EventTrackingWebSocketHandler extends TextWebSocketHandler {
 
     private final ConcurrentHashMap<String, CopyOnWriteArraySet<WebSocketSession>> groupSessions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> sessionToGroupMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Map<String, String>> groupCoordinates = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Map<String, Map<String, String>>> groupCoordinates = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -27,17 +27,22 @@ public class EventTrackingWebSocketHandler extends TextWebSocketHandler {
 
         String groupId = coordinateMessage.getGroupId();
         String userId = coordinateMessage.getUserId();
-        logger.info("Received coordinates from User ID: {} in Group ID: {}", userId, groupId);
+        String username = coordinateMessage.getUsername();
+        String latitude = coordinateMessage.getLatitude();
+        String longitude = coordinateMessage.getLongitude();
+
+        logger.info("Received coordinates from User ID: {} (Username: {}) in Group ID: {}", userId, username, groupId);
 
         // Store the user's session with their group
         sessionToGroupMap.put(session.getId(), groupId);
 
         // Add the session to the group and store the coordinates
         groupSessions.computeIfAbsent(groupId, k -> new CopyOnWriteArraySet<>()).add(session);
-        groupCoordinates.computeIfAbsent(groupId, k -> new ConcurrentHashMap<>()).put(userId, coordinateMessage.getCoordinates());
+        groupCoordinates.computeIfAbsent(groupId, k -> new ConcurrentHashMap<>())
+                .put(userId, Map.of("username", username, "latitude", latitude, "longitude", longitude));
 
         // Prepare the payload to be sent to the group
-        Map<String, String> coordinatesInGroup = groupCoordinates.get(groupId);
+        Map<String, Map<String, String>> coordinatesInGroup = groupCoordinates.get(groupId);
         String payload = objectMapper.writeValueAsString(coordinatesInGroup);
 
         // Broadcast the message to all other sessions in the group, except the sender

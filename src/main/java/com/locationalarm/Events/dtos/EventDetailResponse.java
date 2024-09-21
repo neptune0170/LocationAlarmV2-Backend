@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class EventDetailResponse {
+    private String eventId;
     private String locationName;
     private String lat;
     private String lng;
@@ -15,5 +16,6 @@ public class EventDetailResponse {
     private String time;
     private boolean isAOTEnable;
     private String admin;
+    private String adminName;
     private List<AttendeeResponse> attendees;
 }

@@ -69,19 +69,33 @@ public class EventHeaderServiceImpl implements EventHeaderService {
     @Override
     public String addAttendee(List<String> emails, long eventId) {
         EventHeader eventHeader = eventHeaderRepo.findById(eventId).orElse(null);
-        if(eventHeader == null) return "No Event";
+        if (eventHeader == null) {
+            return "No Event";  // Event does not exist
+        }
+
         List<Attendee> attendeeList = eventHeader.getAttendeeList();
-        emails.stream().forEach(email->{
+        for (String email : emails) {
             User user = userService.findByEmail(email).orElse(null);
-            if(user != null && user.getEventId()==0l){
-                user.setEventId(eventId);
-                userService.updateUser(user);
-                attendeeList.add(Attendee.builder().userEmail(email).build());
+            if (user != null) {
+                if (user.getEventId() != 0) {
+                    // User is already part of another event, return "failed"
+                    return "failed";
+                } else {
+                    // Add user to the event
+                    user.setEventId(eventId);
+                    userService.updateUser(user);
+                    attendeeList.add(Attendee.builder().userEmail(email).build());
+                }
+            } else {
+                // User not found
+                return "user_not_found";
             }
-        });
+        }
         eventHeaderRepo.save(eventHeader);
-        return "Success";
+        return "success";
     }
+
+
 
     @Override
     public String deleteEvent(long eventId) {
@@ -94,15 +108,32 @@ public class EventHeaderServiceImpl implements EventHeaderService {
     public EventDetailResponse getEvent(long eventId) {
         EventHeader eventHeader = eventHeaderRepo.findById(eventId).orElse(null);
         if(eventHeader == null) return null;
+
+        //fetching andmi's name from UserService
+
+        User admin = userService.findByEmail(eventHeader.getAdminEmail()).orElse(null);
+        String adminName = (admin!=null ) ? admin.getFullName() : "Unknown Admin";
+
         List<Attendee> attendeeList = eventHeader.getAttendeeList();
         List<AttendeeResponse> attendeeResponses = new LinkedList<>();
         attendeeList.stream().forEach(attendee -> {
-           attendeeResponses.add(AttendeeResponse.builder()
-                    .email(attendee.getUserEmail()).AOT("").build());
+            if(!attendee.getUserEmail().equals(eventHeader.getAdminEmail()))
+            {
+                User attendeeUser = userService.findByEmail(attendee.getUserEmail()).orElse(null);
+                String attendeeName = (attendeeUser != null ) ? attendeeUser.getFullName() :"Unknown Attendee";
+
+                attendeeResponses.add(AttendeeResponse.builder()
+                        .email(attendee.getUserEmail())
+                                .name(attendeeName)
+                        .AOT("").build());
+            }
+
         });
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:sss");
         return EventDetailResponse.builder()
+                .eventId(String.valueOf(eventId))
                 .admin(eventHeader.getAdminEmail())
+                .adminName(adminName)
                 .eventName(eventHeader.getEventName())
                 .attendees(attendeeResponses)
                 .time(sdf.format(eventHeader.getEventEndTime()))
